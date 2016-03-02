@@ -25,6 +25,9 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `projects`
 --
+DROP DATABASE `maxcrm`;
+CREATE DATABASE `maxcrm` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `maxcrm`;
 
 CREATE TABLE IF NOT EXISTS `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
