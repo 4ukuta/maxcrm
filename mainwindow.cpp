@@ -44,3 +44,30 @@ void MainWindow::on_pushButton_3_clicked()
     query.clear();
     updateComboBox();
 }
+
+void MainWindow::on_comboBox_activated(const QString &arg1)
+{
+    QSqlQuery query;
+    query.prepare("SELECT * FROM users WHERE fio=?");
+    query.addBindValue(ui->comboBox->itemText(ui->comboBox->currentIndex()));
+    query.exec();
+    query.next();
+    ui->fio_2->setText(query.value(1).toString());
+    ui->email_2->setText(query.value(2).toString());
+    ui->phone_2->setText(query.value(3).toString());
+    //qDebug(query.value(1).toString().toLatin1());
+
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QSqlQuery query;
+    query.prepare("UPDATE users SET fio=?,phone=?,email=?  WHERE fio=?");
+    query.addBindValue(ui->fio_2->text());
+    query.addBindValue(ui->phone_2->text());
+    query.addBindValue(ui->email_2->text());
+    query.addBindValue(ui->comboBox->itemText(ui->comboBox->currentIndex()));
+    query.exec();
+    query.clear();
+    updateComboBox();
+}
