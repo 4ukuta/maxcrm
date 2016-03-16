@@ -25,7 +25,7 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `projects`
 --
-DROP DATABASE `maxcrm`;
+
 CREATE DATABASE `maxcrm` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `maxcrm`;
 
@@ -48,9 +48,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
 CREATE TABLE IF NOT EXISTS `user_project_links` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `fio` varchar(200) NOT NULL,
   `project_id` int(11) NOT NULL,
-  `project_name` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_project_ids` (`user_id`,`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

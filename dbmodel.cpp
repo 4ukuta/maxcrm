@@ -1,5 +1,5 @@
 #include "dbmodel.h"
-
+#include "qdebug.h"
 
 
 dbmodel::dbmodel()
@@ -14,6 +14,7 @@ bool dbmodel::connect_db()
     db.setUserName("root");
     db.setPassword("root");
     bool ok = db.open();
+    return ok;
 }
 
 QSqlDatabase dbmodel::getConnetionDB(){
@@ -22,7 +23,7 @@ QSqlDatabase dbmodel::getConnetionDB(){
 void dbmodel::closeConnetion(){
     db.close();
 }
-void dbmodel::addProject(QString projname,QString dstart,QString dend,QString datainfo){
+void dbmodel::addProject(QString projname,QString dstart,QString dend,QString datainfo,QString user_name){
     QSqlQuery query;
     query.prepare("INSERT INTO projects (project_name,date_begin,date_end,add_info) "
              "VALUES (?,?,?,?)");
@@ -32,7 +33,25 @@ void dbmodel::addProject(QString projname,QString dstart,QString dend,QString da
     query.addBindValue(QVariant(dend));
     query.addBindValue(QVariant(datainfo));
     query.exec();
+    QVariant last_id = query.lastInsertId();
     query.clear();
+
+    QSqlQuery query_id_for_user;
+    query_id_for_user.prepare("SELECT id FROM users WHERE fio=?");
+    query_id_for_user.addBindValue(user_name);
+    query_id_for_user.exec();
+    query_id_for_user.next();
+
+    QString id_user = query_id_for_user.value(0).toString();
+    QSqlQuery query1;
+    query1.prepare("INSERT INTO user_project_links (user_id,fio,project_id,project_name) VALUES (?,?,?,?)");
+
+    query1.addBindValue(QVariant(id_user));
+    query1.addBindValue(user_name);
+    query1.addBindValue(last_id);
+    query1.addBindValue(projname);
+    bool d = query1.exec();
+    query1.clear();
 }
 
 void dbmodel::addUser(QString user, QString phone, QString email){
@@ -44,7 +63,6 @@ void dbmodel::addUser(QString user, QString phone, QString email){
     query.addBindValue(QVariant(phone));
     query.addBindValue(QVariant(email));
     query.exec();
-
     query.clear();
 
 }
