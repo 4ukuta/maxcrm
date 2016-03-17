@@ -134,3 +134,35 @@ void MainWindow::on_comboBox_5_currentIndexChanged(const QString &arg1)
     ui->datainfo_3->appendPlainText(query.value(4).toString());
     query.clear();
 }
+
+void MainWindow::on_pushButton_7_clicked()
+{
+    QSqlQuery query;
+    query.prepare("UPDATE projects SET project_name=?, date_begin=?,date_end=?,add_info=? WHERE project_name=?");
+    query.addBindValue(ui->projectname_3->text());
+    query.addBindValue(ui->data_start_3->text());
+    query.addBindValue(ui->data_end_3->text());
+    query.addBindValue(ui->datainfo_3->toPlainText());
+    query.addBindValue(ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
+    query.exec();
+    query.clear();
+}
+
+void MainWindow::on_pushButton_8_clicked()
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM projects WHERE project_name=?");
+    query.addBindValue(ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
+    query.exec();
+    query.clear();
+
+    QSqlQuery query1;
+    query1.prepare("DELETE FROM user_project_links WHERE project_name=? AND fio=?");
+    query1.addBindValue(ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
+    query1.addBindValue(ui->comboBox_4->itemText(ui->comboBox_4->currentIndex()));
+    query1.exec();
+    query1.clear();
+    updateComboBox(ui->comboBox);
+    updateComboBox(ui->comboBox_2);
+    updateComboBox(ui->comboBox_4);
+}
