@@ -25,13 +25,14 @@ void dbmodel::closeConnetion(){
 }
 void dbmodel::addProject(QString projname,QString dstart,QString dend,QString datainfo,QString user_name){
     QSqlQuery query;
-    query.prepare("INSERT INTO projects (project_name,date_begin,date_end,add_info) "
-             "VALUES (?,?,?,?)");
+    query.prepare("INSERT INTO projects (project_name,date_begin,date_end,add_info,rating) "
+             "VALUES (?,?,?,?,?)");
 
     query.addBindValue(QVariant(projname));
     query.addBindValue(QVariant(dstart));
     query.addBindValue(QVariant(dend));
     query.addBindValue(QVariant(datainfo));
+    query.addBindValue(QVariant(0));
     query.exec();
     QVariant last_id = query.lastInsertId();
     query.clear();
@@ -44,12 +45,13 @@ void dbmodel::addProject(QString projname,QString dstart,QString dend,QString da
 
     QString id_user = query_id_for_user.value(0).toString();
     QSqlQuery query1;
-    query1.prepare("INSERT INTO user_project_links (user_id,fio,project_id,project_name) VALUES (?,?,?,?)");
+    query1.prepare("INSERT INTO user_project_links (user_id,fio,project_id,project_name,rating) VALUES (?,?,?,?,?)");
 
     query1.addBindValue(QVariant(id_user));
     query1.addBindValue(user_name);
     query1.addBindValue(last_id);
     query1.addBindValue(projname);
+    query1.addBindValue(0);
     bool d = query1.exec();
     query1.clear();
 }

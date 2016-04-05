@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QComboBox>
+#include "inform.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,8 +42,18 @@ private slots:
 
     void on_pushButton_8_clicked();
 
+    void on_horizontalSlider_rangeChanged(int min, int max);
+
+    void on_horizontalSlider_valueChanged(int value);
+
+    void on_tabWidget_currentChanged(int index);
+    void TableRating();
+
 private:
     Ui::MainWindow *ui;
+
+signals:
+    void setName(QString);
 };
 
 #endif // MAINWINDOW_H

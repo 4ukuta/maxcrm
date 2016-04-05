@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    TableRating();
 }
 
 MainWindow::~MainWindow()
@@ -42,15 +43,35 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    QSqlQuery query;
-    query.prepare("DELETE FROM users WHERE fio=?");
-    query.addBindValue(ui->comboBox->itemText(ui->comboBox->currentIndex()));
-    query.exec();
 
-    query.clear();
-    updateComboBox(ui->comboBox);
-    updateComboBox(ui->comboBox_2);
-    updateComboBox(ui->comboBox_4);
+
+    QSqlQuery query1;
+    query1.prepare("SELECT COUNT(*) FROM user_project_links WHERE fio=?");
+    query1.addBindValue(ui->comboBox->itemText(ui->comboBox->currentIndex()));
+    query1.exec();
+    query1.next();
+    if(query1.value(0).toInt()>0){
+
+        Inform *inf = new Inform();
+        QObject::connect(this, SIGNAL(setName(QString)),
+                   inf, SLOT(getName(QString)));
+         QRect geo = this->geometry();
+        inf->move(geo.x()+this->width()/2-inf->width()/2,geo.y()+this->height()/2-inf->height()/2);
+        emit setName(ui->comboBox->itemText(ui->comboBox->currentIndex()));
+        inf->show();
+    }else{
+        QSqlQuery query;
+            query.prepare("DELETE FROM users WHERE fio=?");
+            query.addBindValue(ui->comboBox->itemText(ui->comboBox->currentIndex()));
+            query.exec();
+
+            query.clear();
+            updateComboBox(ui->comboBox);
+            updateComboBox(ui->comboBox_2);
+            updateComboBox(ui->comboBox_4);
+    }
+
+    query1.clear();
 }
 
 void MainWindow::on_comboBox_activated(const QString &arg1)
@@ -132,20 +153,33 @@ void MainWindow::on_comboBox_5_currentIndexChanged(const QString &arg1)
     ui->data_end_3->setDate(query.value(3).toDate());
     ui->datainfo_3->clear();
     ui->datainfo_3->appendPlainText(query.value(4).toString());
+    ui->horizontalSlider->setValue(query.value(5).toInt());
+    QString s = QString::number(query.value(5).toInt());
+    ui->label_12->setText(s);
     query.clear();
 }
 
 void MainWindow::on_pushButton_7_clicked()
 {
     QSqlQuery query;
-    query.prepare("UPDATE projects SET project_name=?, date_begin=?,date_end=?,add_info=? WHERE project_name=?");
+    query.prepare("UPDATE projects SET project_name=?, date_begin=?,date_end=?,add_info=?,rating=? WHERE project_name=?");
     query.addBindValue(ui->projectname_3->text());
     query.addBindValue(ui->data_start_3->text());
     query.addBindValue(ui->data_end_3->text());
     query.addBindValue(ui->datainfo_3->toPlainText());
+    query.addBindValue(ui->horizontalSlider->value());
     query.addBindValue(ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
+
     query.exec();
     query.clear();
+
+    QSqlQuery query1;
+    query1.prepare("UPDATE user_project_links SET rating=? WHERE fio=? AND project_name=?");
+    query1.addBindValue(ui->horizontalSlider->value());
+    query1.addBindValue(ui->comboBox_4->itemText(ui->comboBox_4->currentIndex()));
+    query1.addBindValue(ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
+    query1.exec();
+    query1.clear();
 }
 
 void MainWindow::on_pushButton_8_clicked()
@@ -165,4 +199,50 @@ void MainWindow::on_pushButton_8_clicked()
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+}
+
+void MainWindow::on_horizontalSlider_rangeChanged(int min, int max)
+{
+
+}
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    int va = value;
+    QString s = QString::number(va);
+    ui->label_12->setText(s);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    int va = index;
+    if(va == 2){
+        TableRating();
+    }
+
+}
+void MainWindow::TableRating(){
+    QSqlQuery query;
+    query.prepare("SELECT fio,SUM(rating),count(fio) FROM user_project_links group by fio");
+    query.exec();
+    int j = 0;
+    while (ui->tableWidget->rowCount() > 0)
+    {
+        ui->tableWidget->removeRow(0);
+    }
+    while(query.next()){
+        ui->tableWidget->insertRow(j);
+         QTableWidgetItem* newItem = new QTableWidgetItem(query.value(0).toString());
+        ui->tableWidget->setItem(j,0,newItem);
+        float a = query.value(1).toFloat();
+        float b = query.value(2).toFloat();
+
+        float x = a/b;
+        QString s;
+        s.setNum(x);
+        newItem = new QTableWidgetItem(s);
+        ui->tableWidget->setItem(j,1,newItem);
+
+    }
+    query.clear();
 }

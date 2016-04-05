@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `date_begin` datetime NOT NULL,
   `date_end` datetime NOT NULL,
   `add_info` text NOT NULL,
+  `rating` int(11),
   PRIMARY KEY (`id`),
   UNIQUE KEY `project_name` (`project_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -51,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `user_project_links` (
   `fio` varchar(200) NOT NULL,
   `project_id` int(11) NOT NULL,
   `project_name` varchar(200) NOT NULL,
+  `rating` int(11),
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_project_ids` (`user_id`,`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

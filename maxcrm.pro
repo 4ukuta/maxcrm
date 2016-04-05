@@ -14,9 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dbmodel.cpp
+    dbmodel.cpp \
+    inform.cpp
 
 HEADERS  += mainwindow.h \
-    dbmodel.h
+    dbmodel.h \
+    inform.h
 QTPLUGIN += qsqlmysql
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    inform.ui
