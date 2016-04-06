@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QComboBox>
 #include "inform.h"
+#include "log.h"
 
 namespace Ui {
 class MainWindow;
@@ -14,6 +15,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    Log *log;
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void updateComboBox(QComboBox *);

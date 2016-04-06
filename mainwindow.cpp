@@ -14,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
     TableRating();
+    log = new Log("log1.out");
+   /* Log log("log.out");
+    log.addLog("123");*/
 }
 
 MainWindow::~MainWindow()
@@ -39,6 +42,7 @@ void MainWindow::on_pushButton_clicked()
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    log->addLog("Добавлен клиент: "+ ui->fio->text()+",телефон: "+ui->phone->text() + ",email: " + ui->email->text());
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -66,12 +70,14 @@ void MainWindow::on_pushButton_3_clicked()
             query.exec();
 
             query.clear();
+            log->addLog("Удаление клиент: "+ ui->comboBox->itemText(ui->comboBox->currentIndex()));
             updateComboBox(ui->comboBox);
             updateComboBox(ui->comboBox_2);
             updateComboBox(ui->comboBox_4);
     }
 
     query1.clear();
+
 }
 
 void MainWindow::on_comboBox_activated(const QString &arg1)
@@ -101,6 +107,7 @@ void MainWindow::on_pushButton_2_clicked()
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    log->addLog("Обновление клиент: "+ ui->fio_2->text()+",телефон: "+ui->phone_2->text() + ",email: " + ui->email_2->text());
 }
 
 void MainWindow::on_pushButton_4_clicked()
@@ -109,6 +116,7 @@ void MainWindow::on_pushButton_4_clicked()
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    log->addLog("Добавлен проект: "+ ui->projectname->text()+",дата начала: "+ui->data_start->text() + ",дата окончания: " + ui->data_end->text() + ",информация: " + ui->datainfo->toPlainText());
 }
 
 void MainWindow::on_comboBox_4_currentIndexChanged(const QString &arg1)
@@ -180,6 +188,7 @@ void MainWindow::on_pushButton_7_clicked()
     query1.addBindValue(ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
     query1.exec();
     query1.clear();
+    log->addLog("Обновление проект: "+ ui->projectname_3->text()+",дата начала: "+ui->data_start_3->text() + ",дата окончания: " + ui->data_end_3->text() + ",информация: " + ui->datainfo_3->toPlainText() + ",рейтинг:" + QString::number(ui->horizontalSlider->value()));
 }
 
 void MainWindow::on_pushButton_8_clicked()
@@ -196,6 +205,7 @@ void MainWindow::on_pushButton_8_clicked()
     query1.addBindValue(ui->comboBox_4->itemText(ui->comboBox_4->currentIndex()));
     query1.exec();
     query1.clear();
+    log->addLog("Удаление проект: "+ ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
