@@ -5,6 +5,8 @@
 #include <QComboBox>
 #include "inform.h"
 #include "log.h"
+#include <QListWidgetItem>
+
 
 namespace Ui {
 class MainWindow;
@@ -20,6 +22,11 @@ public:
     ~MainWindow();
     void updateComboBox(QComboBox *);
     void updateComboBoxProj(QComboBox *);
+    int strstat = 0;
+    int infoustatus = 0;
+    int infopstatus = 0;
+    QString namestr = "";
+    QString pstr = "";
 
 private slots:
     void on_pushButton_clicked();
@@ -50,6 +57,15 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
     void TableRating();
+    void CreateTableByUsers();
+    void itemDoubleClicked(QListWidgetItem* listWidgetItem);
+
+    void on_pushButton_9_clicked();
+
+    void on_pushButton_5_clicked();
+    void viewUserInfo(bool);
+    void viewProjInfo(bool);
+    void on_pushButton_6_clicked();
 
 private:
     Ui::MainWindow *ui;

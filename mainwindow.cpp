@@ -8,7 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    viewUserInfo(false);
+    viewProjInfo(false);
     MainDb.connect_db();
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
@@ -17,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     log = new Log("log1.out");
    /* Log log("log.out");
     log.addLog("123");*/
+    CreateTableByUsers();
+    connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(itemDoubleClicked(QListWidgetItem *)));
 }
 
 MainWindow::~MainWindow()
@@ -24,6 +27,31 @@ MainWindow::~MainWindow()
     MainDb.closeConnetion();
     delete ui;
 }
+void MainWindow::viewUserInfo(bool t){
+    ui->listView->setVisible(t);
+    ui->label_13->setVisible(t);
+    ui->label_15->setVisible(t);
+    ui->label_16->setVisible(t);
+    ui->label_17->setVisible(t);
+    ui->label_18->setVisible(t);
+    ui->label_19->setVisible(t);
+}
+void MainWindow::viewProjInfo(bool t){
+    ui->listView_2->setVisible(t);
+    ui->label_36->setVisible(t);
+    ui->label_35->setVisible(t);
+    ui->label_34->setVisible(t);
+    ui->label_33->setVisible(t);
+    ui->label_32->setVisible(t);
+    ui->label_21->setVisible(t);
+    ui->label_31->setVisible(t);
+    ui->label_30->setVisible(t);
+    ui->label_29->setVisible(t);
+    ui->label_20->setVisible(t);
+    ui->label_22->setVisible(t);
+    ui->plainTextEdit->setVisible(t);
+}
+
 void MainWindow::updateComboBox(QComboBox *cmb){
     cmb->clear();
     QSqlQueryModel *model = new QSqlQueryModel (cmb);
@@ -38,13 +66,64 @@ void MainWindow::updateComboBoxProj(QComboBox *cmb){
 }
 void MainWindow::on_pushButton_clicked()
 {
+
     MainDb.addUser(ui->fio->text(),ui->phone->text(),ui->email->text());
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    CreateTableByUsers();
     log->addLog("Добавлен клиент: "+ ui->fio->text()+",телефон: "+ui->phone->text() + ",email: " + ui->email->text());
 }
 
+void MainWindow::CreateTableByUsers(){
+    ui->listWidget->clear();
+    QSqlQuery query;
+    query.prepare("SELECT * FROM users");
+
+    query.exec();
+    while(query.next()){
+        QListWidgetItem* item = new QListWidgetItem(query.value(1).toString(), ui->listWidget);
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
+        item->setCheckState(Qt::Unchecked); // AND initialize check state
+    }
+}
+void MainWindow::itemDoubleClicked(QListWidgetItem* listWidgetItem) {
+    QString name = listWidgetItem->text();
+
+
+    if(strstat == 1){
+        pstr = name;
+        viewProjInfo(true);
+        infopstatus = 1;
+        QSqlQuery query;
+        query.prepare("SELECT * FROM projects WHERE project_name = ?");
+        query.addBindValue(QVariant(pstr));
+        query.exec();
+        query.next();
+        ui->label_32->setText(namestr);
+        ui->label_33->setText(pstr);
+        ui->label_34->setText(query.value(2).toDate().toString());
+        ui->label_35->setText(query.value(3).toDate().toString());
+        ui->label_36->setText(query.value(5).toString());
+        ui->plainTextEdit->clear();
+        ui->plainTextEdit->appendPlainText(query.value(4).toString());
+    }
+    if(strstat == 0){
+
+        ui->listWidget->clear();
+        QSqlQuery query;
+        query.prepare("SELECT project_name FROM user_project_links WHERE fio = ?");
+        query.addBindValue(QVariant(name));
+        query.exec();
+        while(query.next()){
+            ui->listWidget->addItem(query.value(0).toString());
+        }
+        namestr = name;
+        strstat++;
+        ui->pushButton_9->setDisabled(true);
+    }
+
+}
 void MainWindow::on_pushButton_3_clicked()
 {
 
@@ -77,7 +156,7 @@ void MainWindow::on_pushButton_3_clicked()
     }
 
     query1.clear();
-
+    CreateTableByUsers();
 }
 
 void MainWindow::on_comboBox_activated(const QString &arg1)
@@ -107,6 +186,7 @@ void MainWindow::on_pushButton_2_clicked()
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    CreateTableByUsers();
     log->addLog("Обновление клиент: "+ ui->fio_2->text()+",телефон: "+ui->phone_2->text() + ",email: " + ui->email_2->text());
 }
 
@@ -116,6 +196,7 @@ void MainWindow::on_pushButton_4_clicked()
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    CreateTableByUsers();
     log->addLog("Добавлен проект: "+ ui->projectname->text()+",дата начала: "+ui->data_start->text() + ",дата окончания: " + ui->data_end->text() + ",информация: " + ui->datainfo->toPlainText());
 }
 
@@ -209,6 +290,7 @@ void MainWindow::on_pushButton_8_clicked()
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
+    CreateTableByUsers();
 }
 
 void MainWindow::on_horizontalSlider_rangeChanged(int min, int max)
@@ -229,6 +311,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     if(va == 2){
         TableRating();
     }
+    CreateTableByUsers();
 
 }
 void MainWindow::TableRating(){
@@ -255,4 +338,89 @@ void MainWindow::TableRating(){
 
     }
     query.clear();
+}
+
+void MainWindow::on_pushButton_9_clicked()
+{
+    viewUserInfo(true);
+    QString name = ui->listWidget->currentItem()->text();
+    QSqlQuery query;
+    query.prepare("SELECT * FROM users WHERE fio=?");
+    query.addBindValue(name);
+    query.exec();
+    query.next();
+    ui->label_17->setText(query.value(1).toString());
+    ui->label_19->setText(query.value(2).toString());
+    ui->label_18->setText(query.value(3).toString());
+    infoustatus = 1;
+}
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    if(infoustatus == 1){
+        CreateTableByUsers();
+        viewUserInfo(false);
+        infoustatus = 0;
+    }
+
+    if(infopstatus == 1){
+        viewProjInfo(false);
+        infopstatus = 0;
+        /*ui->listWidget->clear();
+        QSqlQuery query;
+        query.prepare("SELECT project_name FROM user_project_links WHERE fio = ?");
+        query.addBindValue(QVariant(pstr));
+        query.exec();
+        while(query.next()){
+            ui->listWidget->addItem(query.value(0).toString());
+        }*/
+    }else{
+        if(strstat == 1){
+            CreateTableByUsers();
+            ui->pushButton_9->setDisabled(false);
+            strstat--;
+        }
+    }
+
+
+
+}
+
+void MainWindow::on_pushButton_6_clicked()
+{
+    QFile file("allinfo.data");
+    file.open(QFile::WriteOnly|QFile::Truncate);
+    QDate dateToday = QDate::currentDate();
+
+
+    file.write(dateToday.toString().toUtf8() + "\n");
+
+    int j = 1;
+    for(int row = 0; row < ui->listWidget->count(); row++)
+    {
+        QListWidgetItem *item = ui->listWidget->item(row);
+        if(item->checkState() == Qt::Checked){
+            file.write(QString::number(j).toLatin1() +") ФИО:" +item->text().toUtf8() + "\n");
+            QSqlQuery query;
+            query.prepare("SELECT project_name FROM user_project_links WHERE fio = ?");
+            query.addBindValue(QVariant(item->text()));
+            query.exec();
+            int k = 1;
+            while(query.next()){
+                file.write(QString::number(j).toLatin1()+"."+QString::number(k).toLatin1()+") Название проекта:" +query.value(0).toString().toUtf8() + "\n");
+                QSqlQuery query1;
+                query1.prepare("SELECT * FROM projects WHERE project_name = ?");
+                query1.addBindValue(QVariant(query.value(0)));
+                query1.exec();
+                query1.next();
+                file.write("Дата начала:" +query1.value(2).toDate().toString().toUtf8() + "\n");
+                file.write("Дата окончания:" +query1.value(3).toDate().toString().toUtf8() + "\n");
+                file.write("Рейтинг:" +query1.value(5).toString().toUtf8() + "\n");
+                file.write("Информация:" +query1.value(4).toString().toUtf8() + "\n");
+                k++;
+            }
+            j++;
+        }
+    }
+    file.close();
 }

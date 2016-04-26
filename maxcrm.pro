@@ -16,12 +16,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     dbmodel.cpp \
     inform.cpp \
-    log.cpp
+    log.cpp \
+    informact.cpp
 
 HEADERS  += mainwindow.h \
     dbmodel.h \
     inform.h \
-    log.h
+    log.h \
+    informact.h
 QTPLUGIN += qsqlmysql
 FORMS    += mainwindow.ui \
-    inform.ui
+    inform.ui \
+    informact.ui
