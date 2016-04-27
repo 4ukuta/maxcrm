@@ -12,3 +12,11 @@ InformAct::~InformAct()
 {
     delete ui;
 }
+
+void InformAct::on_pushButton_clicked()
+{
+    this->close();
+}
+void InformAct::getInfo(QString s){
+    ui->plainTextEdit->setPlainText(s);
+}

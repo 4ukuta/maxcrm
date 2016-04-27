@@ -6,7 +6,7 @@
 #include "inform.h"
 #include "log.h"
 #include <QListWidgetItem>
-
+#include "informact.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,6 +27,7 @@ public:
     int infopstatus = 0;
     QString namestr = "";
     QString pstr = "";
+    Inform *inf;
 
 private slots:
 
@@ -70,12 +71,14 @@ private slots:
     void ViewCountProject();
 
     void on_comboBox_3_currentIndexChanged(const QString &arg1);
+    void OpenAndWriteInforWin(QString);
 
 private:
     Ui::MainWindow *ui;
 
 signals:
     void setName(QString);
+    void setInfo(QString);
 };
 
 #endif // MAINWINDOW_H

@@ -65,6 +65,9 @@ void dbmodel::addUser(QString user, QString phone, QString email){
     query.addBindValue(QVariant(phone));
     query.addBindValue(QVariant(email));
     query.exec();
+    if(query.exec()){
+
+    }
     query.clear();
 
 }

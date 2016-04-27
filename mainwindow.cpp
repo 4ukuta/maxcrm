@@ -21,6 +21,10 @@ MainWindow::MainWindow(QWidget *parent) :
     CreateTableByUsers();
     connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(itemDoubleClicked(QListWidgetItem *)));
     ViewCountProject();
+    inf = new Inform();
+    connect(this, SIGNAL(setName(QString)),
+               inf, SLOT(getName(QString)));
+
 }
 
 MainWindow::~MainWindow()
@@ -75,6 +79,7 @@ void MainWindow::on_pushButton_clicked()
     CreateTableByUsers();
     ViewCountProject();
     log->addLog("Добавлен клиент: "+ ui->fio->text()+",телефон: "+ui->phone->text() + ",email: " + ui->email->text());
+    OpenAndWriteInforWin("Добавлен клиент: "+ ui->fio->text()+"\nтелефон: "+ui->phone->text() + "\nemail: " + ui->email->text());
 }
 
 void MainWindow::CreateTableByUsers(){
@@ -126,6 +131,15 @@ void MainWindow::itemDoubleClicked(QListWidgetItem* listWidgetItem) {
     }
 
 }
+void MainWindow::OpenAndWriteInforWin(QString s){
+    InformAct *win = new InformAct();
+    connect(this,SIGNAL(setInfo(QString)),win,SLOT(getInfo(QString)));
+    QRect geo = this->geometry();
+    win->move(geo.x()+this->width()/2-win->width()/2,geo.y()+this->height()/2-win->height()/2);
+    emit setInfo(s);
+    win->show();
+}
+
 void MainWindow::on_pushButton_3_clicked()
 {
 
@@ -137,9 +151,7 @@ void MainWindow::on_pushButton_3_clicked()
     query1.next();
     if(query1.value(0).toInt()>0){
 
-        Inform *inf = new Inform();
-        QObject::connect(this, SIGNAL(setName(QString)),
-                   inf, SLOT(getName(QString)));
+
          QRect geo = this->geometry();
         inf->move(geo.x()+this->width()/2-inf->width()/2,geo.y()+this->height()/2-inf->height()/2);
         emit setName(ui->comboBox->itemText(ui->comboBox->currentIndex()));
@@ -151,7 +163,8 @@ void MainWindow::on_pushButton_3_clicked()
             query.exec();
 
             query.clear();
-            log->addLog("Удаление клиент: "+ ui->comboBox->itemText(ui->comboBox->currentIndex()));
+            log->addLog("Удаление клиента: "+ ui->comboBox->itemText(ui->comboBox->currentIndex()));
+            OpenAndWriteInforWin("Удаление клиента: "+ ui->comboBox->itemText(ui->comboBox->currentIndex()));
             updateComboBox(ui->comboBox);
             updateComboBox(ui->comboBox_2);
             updateComboBox(ui->comboBox_4);
@@ -191,6 +204,7 @@ void MainWindow::on_pushButton_2_clicked()
     updateComboBox(ui->comboBox_4);
     CreateTableByUsers();
     log->addLog("Обновление клиент: "+ ui->fio_2->text()+",телефон: "+ui->phone_2->text() + ",email: " + ui->email_2->text());
+    OpenAndWriteInforWin("Обновление клиент: "+ ui->fio_2->text()+"\nтелефон: "+ui->phone_2->text() + "\nemail: " + ui->email_2->text());
 }
 
 void MainWindow::on_pushButton_4_clicked()
@@ -202,6 +216,7 @@ void MainWindow::on_pushButton_4_clicked()
     CreateTableByUsers();
     ViewCountProject();
     log->addLog("Добавлен проект: "+ ui->projectname->text()+",дата начала: "+ui->data_start->text() + ",дата окончания: " + ui->data_end->text() + ",информация: " + ui->datainfo->toPlainText());
+    OpenAndWriteInforWin("Добавлен проект: "+ ui->projectname->text()+"\nдата начала: "+ui->data_start->text() + "\nдата окончания: " + ui->data_end->text() + "\nинформация: " + ui->datainfo->toPlainText());
 }
 
 void MainWindow::on_comboBox_4_currentIndexChanged(const QString &arg1)
@@ -274,6 +289,7 @@ void MainWindow::on_pushButton_7_clicked()
     query1.exec();
     query1.clear();
     log->addLog("Обновление проект: "+ ui->projectname_3->text()+",дата начала: "+ui->data_start_3->text() + ",дата окончания: " + ui->data_end_3->text() + ",информация: " + ui->datainfo_3->toPlainText() + ",рейтинг:" + QString::number(ui->horizontalSlider->value()));
+    OpenAndWriteInforWin("Обновление проект: "+ ui->projectname_3->text()+"\nдата начала: "+ui->data_start_3->text() + "\nдата окончания: " + ui->data_end_3->text() + "\nинформация: " + ui->datainfo_3->toPlainText() + "\nрейтинг:" + QString::number(ui->horizontalSlider->value()));
 }
 
 void MainWindow::on_pushButton_8_clicked()
@@ -290,12 +306,13 @@ void MainWindow::on_pushButton_8_clicked()
     query1.addBindValue(ui->comboBox_4->itemText(ui->comboBox_4->currentIndex()));
     query1.exec();
     query1.clear();
-    log->addLog("Удаление проект: "+ ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
+    log->addLog("Удаление проекта: "+ ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
     updateComboBox(ui->comboBox);
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
     CreateTableByUsers();
     ViewCountProject();
+    OpenAndWriteInforWin("Удаление проекта: "+ ui->comboBox_5->itemText(ui->comboBox_5->currentIndex()));
 }
 
 void MainWindow::on_horizontalSlider_rangeChanged(int min, int max)
@@ -470,6 +487,6 @@ void MainWindow::on_comboBox_3_currentIndexChanged(const QString &arg1)
          query3.addBindValue(QVariant(query2.value(0)));
          query3.exec();
          query3.next();
-         ui->listWidget_2->addItem(query3.value(0).toString() + " # " + query3.value(1).toDate().toString() +" - "+query3.value(2).toDate().toString());
+         ui->listWidget_2->addItem(query3.value(0).toString() + "\t " + query3.value(1).toDate().toString() +"\t-\t"+query3.value(2).toDate().toString());
      }
 }

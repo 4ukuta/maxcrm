@@ -15,7 +15,7 @@ public:
     explicit Inform(QWidget *parent = 0);
     ~Inform();
 public slots:
-    void getName(QString name);
+    void getName(QString );
 private:
     Ui::Inform *ui;
 };

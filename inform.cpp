@@ -13,5 +13,5 @@ Inform::~Inform()
     delete ui;
 }
 void Inform::getName(QString name){
-    ui->label->setText("Нельзя удалить клиента: "+name + ". Т.к. он имеет проекты!!!");
+  ui->informl->setText("Нельзя удалить клиента: "+name + ". Т.к. он имеет проекты!!!");
 }
