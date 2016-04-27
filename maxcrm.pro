@@ -28,3 +28,4 @@ QTPLUGIN += qsqlmysql
 FORMS    += mainwindow.ui \
     inform.ui \
     informact.ui
+

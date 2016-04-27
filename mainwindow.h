@@ -29,6 +29,7 @@ public:
     QString pstr = "";
 
 private slots:
+
     void on_pushButton_clicked();
 
     void on_pushButton_3_clicked();
@@ -66,6 +67,9 @@ private slots:
     void viewUserInfo(bool);
     void viewProjInfo(bool);
     void on_pushButton_6_clicked();
+    void ViewCountProject();
+
+    void on_comboBox_3_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;

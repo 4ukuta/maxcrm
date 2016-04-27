@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     log.addLog("123");*/
     CreateTableByUsers();
     connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(itemDoubleClicked(QListWidgetItem *)));
+    ViewCountProject();
 }
 
 MainWindow::~MainWindow()
@@ -72,6 +73,7 @@ void MainWindow::on_pushButton_clicked()
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
     CreateTableByUsers();
+    ViewCountProject();
     log->addLog("Добавлен клиент: "+ ui->fio->text()+",телефон: "+ui->phone->text() + ",email: " + ui->email->text());
 }
 
@@ -157,6 +159,7 @@ void MainWindow::on_pushButton_3_clicked()
 
     query1.clear();
     CreateTableByUsers();
+    ViewCountProject();
 }
 
 void MainWindow::on_comboBox_activated(const QString &arg1)
@@ -197,6 +200,7 @@ void MainWindow::on_pushButton_4_clicked()
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
     CreateTableByUsers();
+    ViewCountProject();
     log->addLog("Добавлен проект: "+ ui->projectname->text()+",дата начала: "+ui->data_start->text() + ",дата окончания: " + ui->data_end->text() + ",информация: " + ui->datainfo->toPlainText());
 }
 
@@ -291,6 +295,7 @@ void MainWindow::on_pushButton_8_clicked()
     updateComboBox(ui->comboBox_2);
     updateComboBox(ui->comboBox_4);
     CreateTableByUsers();
+    ViewCountProject();
 }
 
 void MainWindow::on_horizontalSlider_rangeChanged(int min, int max)
@@ -312,6 +317,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         TableRating();
     }
     CreateTableByUsers();
+    ViewCountProject();
 
 }
 void MainWindow::TableRating(){
@@ -388,6 +394,7 @@ void MainWindow::on_pushButton_5_clicked()
 
 void MainWindow::on_pushButton_6_clicked()
 {
+
     QFile file("allinfo.data");
     file.open(QFile::WriteOnly|QFile::Truncate);
     QDate dateToday = QDate::currentDate();
@@ -423,4 +430,46 @@ void MainWindow::on_pushButton_6_clicked()
         }
     }
     file.close();
+}
+void MainWindow::ViewCountProject(){
+    QSqlQuery query1;
+    query1.prepare("SELECT COUNT( * )  FROM projects");
+
+    query1.exec();
+    query1.next();
+    ui->label_38->setText(query1.value(0).toString());
+    updateComboBox(ui->comboBox_3);
+}
+
+void MainWindow::on_comboBox_3_currentIndexChanged(const QString &arg1)
+{
+    QSqlQuery query1;
+    query1.prepare("SELECT COUNT( * )  FROM user_project_links WHERE fio=?");
+    query1.addBindValue(QVariant(arg1));
+    query1.exec();
+    query1.next();
+    float c = query1.value(0).toFloat();
+     ui->label_42->setText(query1.value(0).toString());
+     QSqlQuery query;
+     query.prepare("SELECT COUNT( * )  FROM projects");
+
+     query.exec();
+     query.next();
+     float c1 = query.value(0).toFloat();
+     double x = c/c1;
+
+     ui->progressBar->setValue(x*100);
+     ui->listWidget_2->clear();
+     QSqlQuery query2;
+     query2.prepare("SELECT project_id  FROM user_project_links WHERE fio=?");
+      query2.addBindValue(QVariant(arg1));
+     query2.exec();
+     while(query2.next()){
+         QSqlQuery query3;
+         query3.prepare("SELECT project_name,date_begin,date_end  FROM projects WHERE id=?");
+         query3.addBindValue(QVariant(query2.value(0)));
+         query3.exec();
+         query3.next();
+         ui->listWidget_2->addItem(query3.value(0).toString() + " # " + query3.value(1).toDate().toString() +" - "+query3.value(2).toDate().toString());
+     }
 }
