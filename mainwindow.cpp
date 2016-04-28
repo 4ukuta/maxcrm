@@ -420,6 +420,7 @@ void MainWindow::on_pushButton_6_clicked()
     file.write(dateToday.toString().toUtf8() + "\n");
 
     int j = 1;
+    int s1 = 0;
     for(int row = 0; row < ui->listWidget->count(); row++)
     {
         QListWidgetItem *item = ui->listWidget->item(row);
@@ -444,8 +445,13 @@ void MainWindow::on_pushButton_6_clicked()
                 k++;
             }
             j++;
+            s1 = 1;
         }
     }
+    if(s1==1){
+        OpenAndWriteInforWin("Отчет записан!!!");
+    }
+
     file.close();
 }
 void MainWindow::ViewCountProject(){
